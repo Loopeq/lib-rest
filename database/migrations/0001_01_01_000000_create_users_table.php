@@ -29,7 +29,7 @@ return new class extends Migration
                 'token' => $this->generateToken(),
             ]);
         } catch (\Exception $e){
-            Log::error('Ошибка при создании супеюзера' . $e->getMessage());
+            Log::error('Ошибка при создании супер-юзера' . $e->getMessage());
         }
         
     }
@@ -37,8 +37,6 @@ return new class extends Migration
     public function down(): void
     {
         Schema::dropIfExists('users');
-        Schema::dropIfExists('password_reset_tokens');
-        Schema::dropIfExists('sessions');
     }
 
     private function generateToken(): string{
