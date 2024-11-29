@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
+use Illuminate\Validation\ValidationException;
 use App\Models\Book;
 use OpenApi\Annotations as OA;
 
@@ -11,7 +12,7 @@ use OpenApi\Annotations as OA;
 /**
  * @OA\Tag(
  *     name="Books",
- *     description="Operations related to books"
+ *     description="Operations with books"
  * )
  */
 class BookController extends Controller

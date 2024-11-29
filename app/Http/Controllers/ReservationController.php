@@ -5,22 +5,53 @@ use App\Models\Book;
 use App\Models\Reservation;
 
 use Illuminate\Http\Request;
+use Illuminate\Validation\ValidationException;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
+use OpenApi\Annotations as OA;
 
 
+/**
+ * @OA\Tag(
+ *     name="Reservation",
+ *     description="Operations with reservation",
+ * )
+ */
 class ReservationController extends Controller
 {
+     /**
+     * @OA\Get(
+     *     path="/api/reservations",
+     *     summary="Get all reservations",
+     *     tags={"Reservation"},
+     *     @OA\Response(response="200", description="A list of reservations")
+     * )
+     */
     public function index()
     {
         return response()->json(Reservation::with('book')->get());
     }
 
+    /**
+     * @OA\Post(
+     *     path="/api/reservations",
+     *     summary="Create a new reservation",
+     *     tags={"Reservation"},
+     *     @OA\RequestBody(
+     *         required=true,
+     *         @OA\JsonContent(ref="#/components/schemas/Reservation")
+     *     ),
+     *     @OA\Response(response="201", description="Reservation created"),
+     *     @OA\Response(response="400", description="Book already reserved"),
+     *     @OA\Response(response="404", description="Book or User not found"),
+     *     @OA\Response(response="500", description="Server error")
+     * )
+     */
     public function store(Request $request)
     {
         try{
             $request->validate([
                 'book_id' => 'required|exists:books,id',
-                'user_id' => 'required|string',
+                'user_id' => 'required|exists:users,id',
             ]);
 
             $book = Book::findOrFail($request->book_id);
@@ -36,12 +67,12 @@ class ReservationController extends Controller
             return response()->json([
                 "error" => "Book to reservation not found",
                 "messages" => $e->getMessage(),
-            ], 404);
-        } catch (ValidationError $e){ 
+            ], 400);
+        } catch (ValidationException $e){ 
             return response()->json([
                 "error" => "Validation error",
                 "messages" => $e->validator->errors(),
-            ], 400);
+            ], 404);
         } catch (\Exception $e){ 
             return response()->json([
                 "error" => "Server error",
@@ -50,6 +81,22 @@ class ReservationController extends Controller
         }
     }
 
+    /**
+     * @OA\Get(
+     *     path="/api/reservations/{id}",
+     *     summary="Get a reservation by ID",
+     *     tags={"Reservation"},
+     *     @OA\Parameter(
+     *         name="id",
+     *         in="path",
+     *         required=true,
+     *         @OA\Schema(type="integer")
+     *     ),
+     *     @OA\Response(response="200", description="Reservation details"),
+     *     @OA\Response(response="404", description="Reservation not found"),
+     *     @OA\Response(response="500", description="Server error"),
+     * )
+     */
     public function show(string $id)
     {
         try{ 
@@ -69,6 +116,22 @@ class ReservationController extends Controller
 
     }
 
+    /**
+     * @OA\Delete(
+     *     path="/api/reservations/{id}",
+     *     summary="Delete a reservation by ID",
+     *     tags={"Reservation"},
+     *     @OA\Parameter(
+     *         name="id",
+     *         in="path",
+     *         required=true,
+     *         @OA\Schema(type="integer")
+     *     ),
+     *     @OA\Response(response="204", description="Reservation deleted"),
+     *     @OA\Response(response="404", description="Reservation not found"),
+     *     @OA\Response(response="500", description="Serve error")
+     * )
+     */
     public function destroy(string $id)
     {
         try{ 
