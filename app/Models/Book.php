@@ -15,4 +15,9 @@ class Book extends Model
         'is_reserved',
         'release_date',
     ];
+
+    public function reservations()
+    {
+        return $this->hasMany(Reservation::class);
+    }
 }
