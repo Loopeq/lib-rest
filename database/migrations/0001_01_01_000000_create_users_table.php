@@ -29,7 +29,7 @@ return new class extends Migration
                 'token' => $this->generateToken(),
             ]);
         } catch (\Exception $e){
-            Log::error('Ошибка при создании супер-юзера' . $e->getMessage());
+            Log::error('Error while creating admin' . $e->getMessage());
         }
         
     }
