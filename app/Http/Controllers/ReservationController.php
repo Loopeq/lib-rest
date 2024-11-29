@@ -1,6 +1,8 @@
 <?php
 
 namespace App\Http\Controllers;
+use App\Models\Book;
+use App\Models\Reservation;
 
 use Illuminate\Http\Request;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
@@ -44,7 +46,7 @@ class ReservationController extends Controller
             return response()->json([
                 "error" => "Server error",
                 "message" => $e->getMessage(),
-            ], 500)
+            ], 500);
         }
     }
 
@@ -62,7 +64,7 @@ class ReservationController extends Controller
             return response()->json([
                 "error" => "Server error",
                 "message" => $e->getMessage(),
-            ], 500)
+            ], 500);
         }
 
     }

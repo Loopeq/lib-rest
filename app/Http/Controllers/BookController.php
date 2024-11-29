@@ -11,7 +11,7 @@ class BookController extends Controller
 
     public function index()
     {
-        return response()->json(Book:all());
+        return response()->json(Book::all());
     }
 
     public function store(Request $request)
@@ -51,7 +51,7 @@ class BookController extends Controller
             return response()->json([
                 "error" => "Server error",
                 "message" => $e->getMessage(),
-            ], 500)
+            ], 500);
         }
     }
 
@@ -61,7 +61,7 @@ class BookController extends Controller
         $books = Book::where("title", "LIKE", "%query%")
                 ->orWhere("author", "LIKE", "%query%")
                 ->get();
-        return response()->json($books)
+        return response()->json($books);
     }
 
     public function update(Request $request, string $id)
