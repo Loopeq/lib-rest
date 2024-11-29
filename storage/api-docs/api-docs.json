@@ -1,0 +1,288 @@
+{
+    "openapi": "3.0.0",
+    "info": {
+        "title": "Lib API",
+        "description": "API for managing books",
+        "version": "1.0"
+    },
+    "paths": {
+        "/api/books": {
+            "get": {
+                "tags": [
+                    "Books"
+                ],
+                "summary": "Get all books",
+                "operationId": "a9d13283dfab262e97af3c914d51b7a8",
+                "responses": {
+                    "200": {
+                        "description": "A list of books"
+                    }
+                }
+            },
+            "post": {
+                "tags": [
+                    "Books"
+                ],
+                "summary": "Create a new book",
+                "operationId": "47047e95a700b3271b697e57d0965191",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/Book"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "201": {
+                        "description": "Book created"
+                    },
+                    "400": {
+                        "description": "Validation error"
+                    },
+                    "500": {
+                        "description": "Server error"
+                    }
+                }
+            }
+        },
+        "/api/books/{id}": {
+            "get": {
+                "tags": [
+                    "Books"
+                ],
+                "summary": "Get a book by ID",
+                "operationId": "2fdd668eb661591758aff4c56ca9b66a",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Book details"
+                    },
+                    "404": {
+                        "description": "Book not found"
+                    },
+                    "500": {
+                        "description": "Server error"
+                    }
+                }
+            },
+            "put": {
+                "tags": [
+                    "Books"
+                ],
+                "summary": "Update a book by ID",
+                "operationId": "f5ca658c501a803d68655af0365e3802",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/Book"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Book updated"
+                    },
+                    "404": {
+                        "description": "Book not found"
+                    },
+                    "500": {
+                        "description": "Server error"
+                    }
+                }
+            },
+            "delete": {
+                "tags": [
+                    "Books"
+                ],
+                "summary": "Delete a book by ID",
+                "operationId": "1a9c26667c32b8ed5e5770d7a1cc9d5c",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "204": {
+                        "description": "Book deleted"
+                    },
+                    "404": {
+                        "description": "Book not found"
+                    },
+                    "500": {
+                        "description": "Server error"
+                    }
+                }
+            }
+        },
+        "/api/books/search": {
+            "get": {
+                "tags": [
+                    "Books"
+                ],
+                "summary": "Search for books by query",
+                "operationId": "a50e12f6ebf00d1971a30d2fe743509c",
+                "parameters": [
+                    {
+                        "name": "query",
+                        "in": "query",
+                        "description": "Author name or book title",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "A list of books matching the search criteria"
+                    }
+                }
+            }
+        },
+        "/api/books/{id}/reserve": {
+            "post": {
+                "tags": [
+                    "Books"
+                ],
+                "summary": "Reserve a book by ID",
+                "operationId": "48b9babc0d90aa559d70dc5a182facbc",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Book reserved"
+                    },
+                    "400": {
+                        "description": "Book is already reserved"
+                    },
+                    "404": {
+                        "description": "Book not found"
+                    },
+                    "500": {
+                        "description": "Server error"
+                    }
+                }
+            }
+        },
+        "/api/books/{id}/return": {
+            "post": {
+                "tags": [
+                    "Books"
+                ],
+                "summary": "Return a reserved book by ID",
+                "operationId": "3ebaaf1ff1d3c8c3fc4ac6082f3151d8",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Book returned"
+                    },
+                    "400": {
+                        "description": "Book is not reserved"
+                    },
+                    "404": {
+                        "description": "Book not found"
+                    },
+                    "500": {
+                        "description": "Server error"
+                    }
+                }
+            }
+        }
+    },
+    "components": {
+        "schemas": {
+            "Book": {
+                "required": [
+                    "title",
+                    "author",
+                    "release_date"
+                ],
+                "properties": {
+                    "title": {
+                        "type": "string",
+                        "example": "Idiot"
+                    },
+                    "author": {
+                        "type": "string",
+                        "example": "F.M. Dostoevsky"
+                    },
+                    "release_date": {
+                        "type": "integer",
+                        "example": "1896-01-01"
+                    }
+                },
+                "type": "object"
+            },
+            "Reservation": {
+                "required": [
+                    "book_id",
+                    "user_id"
+                ],
+                "properties": {
+                    "book_id": {
+                        "type": "integer",
+                        "example": 1
+                    },
+                    "user_id": {
+                        "type": "integer",
+                        "example": 2
+                    }
+                },
+                "type": "object"
+            }
+        }
+    },
+    "tags": [
+        {
+            "name": "Books",
+            "description": "Operations related to books"
+        }
+    ]
+}

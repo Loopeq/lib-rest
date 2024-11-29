@@ -5,15 +5,45 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 use App\Models\Book;
+use OpenApi\Annotations as OA;
 
+
+/**
+ * @OA\Tag(
+ *     name="Books",
+ *     description="Operations related to books"
+ * )
+ */
 class BookController extends Controller
 {
 
+    /**
+     * @OA\Get( 
+     *     path="/api/books",
+     *     summary="Get all books",
+     *     tags={"Books"},
+     *     @OA\Response(response="200", description="A list of books")
+     * )
+     */
     public function index()
     {
         return response()->json(Book::all());
     }
 
+    /**
+     * @OA\Post(
+     *     path="/api/books",
+     *     summary="Create a new book",
+     *     tags={"Books"},
+     *     @OA\RequestBody(
+     *         required=true,
+     *         @OA\JsonContent(ref="#/components/schemas/Book")
+     *     ),
+     *     @OA\Response(response="201", description="Book created"),
+     *     @OA\Response(response="400", description="Validation error"),
+     *     @OA\Response(response="500", description="Server error"),
+     * )
+     */
     public function store(Request $request)
     {
         try {
@@ -37,6 +67,22 @@ class BookController extends Controller
         }
     }
 
+    /**
+     * @OA\Get(
+     *     path="/api/books/{id}",
+     *     summary="Get a book by ID",
+     *     tags={"Books"},
+     *     @OA\Parameter(
+     *         name="id",
+     *         in="path",
+     *         required=true,
+     *         @OA\Schema(type="integer")
+     *     ),
+     *     @OA\Response(response="200", description="Book details"),
+     *     @OA\Response(response="404", description="Book not found"),
+     *     @OA\Response(response="500", description="Server error"),
+     * )
+     */
     public function show(string $id)
     {
         try{
@@ -55,7 +101,22 @@ class BookController extends Controller
         }
     }
 
-    public function find(Request $request)
+    /**
+     * @OA\Get(
+     *     path="/api/books/search",
+     *     summary="Search for books by query",
+     *     tags={"Books"},
+     *     @OA\Parameter(
+     *         name="query",
+     *         in="query",
+     *         required=true,
+     *         description="Author name or book title",
+     *         @OA\Schema(type="string")
+     *     ),
+     *     @OA\Response(response="200", description="A list of books matching the search criteria")
+     * )
+     */
+    public function search(Request $request)
     {
         $query = $request->input("query");
         $books = Book::where("title", "LIKE", "%query%")
@@ -64,6 +125,26 @@ class BookController extends Controller
         return response()->json($books);
     }
 
+    /**
+     * @OA\Put(
+     *     path="/api/books/{id}",
+     *     summary="Update a book by ID",
+     *     tags={"Books"},
+     *     @OA\Parameter(
+     *         name="id",
+     *         in="path",
+     *         required=true,
+     *         @OA\Schema(type="integer")
+     *     ),
+     *     @OA\RequestBody(
+     *         required=true,
+     *         @OA\JsonContent(ref="#/components/schemas/Book")
+     *     ),
+     *     @OA\Response(response="200", description="Book updated"),
+     *     @OA\Response(response="404", description="Book not found"),
+     *     @OA\Response(response="500", description="Server error")
+     * )
+     */
     public function update(Request $request, string $id)
     {
         try {
@@ -82,6 +163,23 @@ class BookController extends Controller
         }   
     }
 
+
+    /**
+     * @OA\Delete(
+     *     path="/api/books/{id}",
+     *     summary="Delete a book by ID",
+     *     tags={"Books"},
+     *     @OA\Parameter(
+     *         name="id",
+     *         in="path",
+     *         required=true,
+     *         @OA\Schema(type="integer")
+     *     ),
+     *     @OA\Response(response="204", description="Book deleted"),
+     *     @OA\Response(response="404", description="Book not found"),
+     *     @OA\Response(response="500", description="Server error"),
+     * )
+     */ 
     public function destroy(string $id)
     {
         try {
@@ -102,6 +200,23 @@ class BookController extends Controller
         }
     }
 
+    /**
+     * @OA\Post(
+     *     path="/api/books/{id}/reserve",
+     *     summary="Reserve a book by ID",
+     *     tags={"Books"},
+     *     @OA\Parameter(
+     *         name="id",
+     *         in="path",
+     *         required=true,
+     *         @OA\Schema(type="integer")
+     *     ),
+     *     @OA\Response (response="200", description="Book reserved"),
+     *     @OA\Response(response="400", description="Book is already reserved"),
+     *     @OA\Response(response="404", description="Book not found"), 
+     *     @OA\Response(response="500", description="Server error")
+     * )
+     */
     public function reserve($id)
     {  
         try {
@@ -125,6 +240,23 @@ class BookController extends Controller
         }
     }
 
+    /**
+     * @OA\Post(
+     *     path="/api/books/{id}/return",
+     *     summary="Return a reserved book by ID",
+     *     tags={"Books"},
+     *     @OA\Parameter(
+     *         name="id",
+     *         in="path",
+     *         required=true,
+     *         @OA\Schema(type="integer")
+     *     ),
+     *     @OA\Response(response="200", description="Book returned"),
+     *     @OA\Response(response="400", description="Book is not reserved"),
+     *     @OA\Response(response="404", description="Book not found"),
+     *     @OA\Response(response="500", description="Server error"),
+     * )
+     */
     public function return($id)
     {
         try {
