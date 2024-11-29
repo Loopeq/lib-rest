@@ -12,7 +12,7 @@ return new class extends Migration
             $table->id();
             $table->string('title');
             $table->string('author');
-            $table->boolean('is_reserved')->defalult(false); 
+            $table->boolean('is_reserved')->default(false); 
             $table->date('release_date');
             $table->timestamps();
 
