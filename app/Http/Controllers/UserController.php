@@ -73,6 +73,51 @@ class UserController extends Controller
         }   
     }
 
+    /**
+     * @OA\Get(
+     *     path="/api/user/me",
+     *     summary="Get user me",
+     *     tags={"User"},
+     *     @OA\Response(
+     *         response="200",
+     *         description="User found",
+     *         @OA\JsonContent(
+     *             @OA\Property(property="user", ref="#/components/schemas/User")
+     *         )
+     *     ),
+     *     @OA\Response(
+     *         response="401",
+     *         description="Token not provided",
+     *     ),
+     *     @OA\Response(
+     *         response="404",
+     *         description="User not found",
+     *     ),
+     *     @OA\Response(response="500", 
+     *                  description="Server Error")
+     *  )
+     */
+    public function me(Request $request){ 
+        try{
+            $token = $request->header('Authorization');
+            if (!$token) {
+                return response()->json(['message' => 'Token not provided'], 401);
+            }
+            $user = User::where('token', $token)->first();
+            if (!$user) {
+                return response()->json(['message' => 'User  not found',], 404);
+            }
+
+            return response() -> json(['message' => 'User found', 'user' => $user], 200);
+        } catch (\Exceptions $e){
+            return response()->json([
+                'error' => 'Server error',
+                'message' => $e->getMessage(),
+            ], 500);
+        }
+
+    }
+
     private function generateToken(): string{
         return substr(bin2hex(random_bytes(16)), 0, 16);
     }

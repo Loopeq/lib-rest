@@ -386,6 +386,41 @@
                     }
                 }
             }
+        },
+        "/api/user/me": {
+            "get": {
+                "tags": [
+                    "User"
+                ],
+                "summary": "Get user me",
+                "operationId": "8120197dbf6b5752a156b9868aa8bd4e",
+                "responses": {
+                    "200": {
+                        "description": "User found",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "user": {
+                                            "$ref": "#/components/schemas/User"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Token not provided"
+                    },
+                    "404": {
+                        "description": "User not found"
+                    },
+                    "500": {
+                        "description": "Server Error"
+                    }
+                }
+            }
         }
     },
     "components": {

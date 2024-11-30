@@ -9,6 +9,7 @@ use App\Http\Middlewares\AdminMiddleware;
 Route::post('/books/{id}/reserve', [BookController::class, 'reserve']);
 Route::post('/books/{id}/return', [BookController::class, 'return']);
 Route::post('/user/register', [UserController::class, 'register']);
+Route::get('/user/me', [UserController::class, 'me']);
 
 Route::middleware([AdminMiddleware::class])->group(function (){
     Route::get('/books', [BookController::class, 'index']);
