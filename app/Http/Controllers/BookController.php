@@ -89,13 +89,11 @@ class BookController extends Controller
     public function show(string $id)
     {
         try{
-            $book = Book::findOrFail($id);
+            $book = Book::find($id);
+            if(!$book){
+                return response()->json(['message' => 'Book not found', 404]);
+            }
             return response()->json($book);
-        } catch (ModelNotFoundException $e){
-            return response()->json([
-                "error" => "Book not found",
-                "message" => $e->getMessage(),
-            ], 404); 
         } catch (\Exception $e){
             return response()->json([
                 "error" => "Server error",
@@ -122,8 +120,8 @@ class BookController extends Controller
     public function search(Request $request)
     {
         $query = $request->input("query");
-        $books = Book::where("title", "LIKE", "%query%")
-                ->orWhere("author", "LIKE", "%query%")
+        $books = Book::where("title", "LIKE", "%{$query}%")
+                ->orWhere("author", "LIKE", "%{$query}%")
                 ->get();
         return response()->json($books);
     }
@@ -151,13 +149,12 @@ class BookController extends Controller
     public function update(Request $request, string $id)
     {
         try {
-            $book = Book::findOrFail($id);
-            $book.update($request->all());
+            $book = Book::find($id);
+            if (!$book){
+                return response()->json(['message' => 'Book not found', 404]);
+            }
+            $book->update($request->all());
             return response()->json($book);            
-        } catch (ModelNotFoundException $e) {
-            return response()->json([
-                "error" => "Book to update not found",
-            ], 404);
         } catch (\Exception $e) {
             return response()->json([
                 "error" => "Server error",
@@ -199,7 +196,6 @@ class BookController extends Controller
                 'error' => 'Server error',
                 'message' => $e->getMessage(),
             ], 500);
-    
         }
     }
 
@@ -308,7 +304,7 @@ class BookController extends Controller
             if (!$reservation) {
                 return response()->json(['message' => 'No reservation found for this user and book'], 404);
             }
-            
+
             $reservation->delete();
             $book->is_reserved = false;
             $book->save();

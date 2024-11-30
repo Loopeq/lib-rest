@@ -21,7 +21,7 @@ class UserController extends Controller
      * @OA\Post(
      *     path="/api/user/register",
      *     summary="Register user",
-     *     tags={"User "},
+     *     tags={"User"},
      *     @OA\RequestBody(
      *         required=true,
      *         @OA\JsonContent(ref="#/components/schemas/User")
@@ -37,31 +37,40 @@ class UserController extends Controller
      *     @OA\Response(
      *         response="422",
      *         description="Validation errors",
-     *     )
-     * )
+     *     ),
+     *     @OA\Response(response="500", 
+     *                  description="Server Error")
+     *  )
      */
     public function register(Request $request)
     {
-        $validator = Validator::make($request->all(), [
-                'name' => 'required|string|max:255',
-                'email' => 'required|string|email|max:255|unique:users',
-                'password' => 'required|string|min:8',
+        try{
+            $validator = Validator::make($request->all(), [
+                    'name' => 'required|string|max:255',
+                    'email' => 'required|string|email|max:255|unique:users',
+                    'password' => 'required|string|min:8',
+                ]);
+        
+            if ($validator->fails()) {
+                return response()->json($validator->errors(), 422);
+            }
+
+            $token = $this->generateToken();
+            \Log::info('token: ' . $token); 
+            $user = User::create([
+                'name' => $request->name,
+                'email' => $request->email,
+                'password' => Hash::make($request->password),
+                'token' => $token,
             ]);
-    
-        if ($validator->fails()) {
-            return response()->json($validator->errors(), 422);
-        }
 
-        $token = $this->generateToken();
-        \Log::info('token: ' . $token); 
-        $user = User::create([
-            'name' => $request->name,
-            'email' => $request->email,
-            'password' => Hash::make($request->password),
-            'token' => $token,
-        ]);
-
-        return response()->json(['message' => 'User create successfully', 'user' => $user], 201);   
+            return response()->json(['message' => 'User create successfully', 'user' => $user], 201);
+        } catch (\Exception $e) {
+            return response()->json([
+                "error" => "Server error",
+                "message" => $e->getMessage(),
+            ], 500);
+        }   
     }
 
     private function generateToken(): string{

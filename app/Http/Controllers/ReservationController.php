@@ -54,14 +54,16 @@ class ReservationController extends Controller
                 'user_id' => 'required|exists:users,id',
             ]);
 
-            $book = Book::findOrFail($request->book_id);
+            $book = Book::find($request->book_id);
+            if (!$book){
+                return response()->json(['message'=>'Book is not found'], 404);
+            }
             if ($book->is_reserved) {
                 return response()->json(['message' => 'Book is already reserved'], 400);
             }
             $reservation = Reservation::create($request->all());
             $book->is_reserved = true;
             $book->save();
-
             return response()->json($reservation, 201);
         } catch (ModelNotFoundException $e){
             return response()->json([
@@ -70,7 +72,7 @@ class ReservationController extends Controller
             ], 400);
         } catch (ValidationException $e){ 
             return response()->json([
-                "error" => "Validation error",
+                "error" => "User not found",
                 "messages" => $e->validator->errors(),
             ], 404);
         } catch (\Exception $e){ 
@@ -100,13 +102,11 @@ class ReservationController extends Controller
     public function show(string $id)
     {
         try{ 
-            $reservation = Reservation::with('book')->findOrFail($id);
+            $reservation = Reservation::with('book')->find($id);
+            if (!$reservation){
+                return response()->json(['message'=>'Reservation not found'], 404);
+            }
             return response()->json($reservation);
-        } catch(ModelNotFoundException $e){ 
-            return response()->json([
-                "error" => "Reservation not found",
-                "messages" => $e->getMessage(),
-            ], 404);   
         } catch (\Exception $e){ 
             return response()->json([
                 "error" => "Server error",
@@ -136,16 +136,14 @@ class ReservationController extends Controller
     {
         try{ 
             $reservation = Reservation::findOrFail($id);
-            $book = Book::findOrFail($reservation->book_id);
+            $book = Book::find($reservation->book_id);
+            if (!$book){
+                return response()->json(['message'=>'Book not found'], 404);
+            }
             $book->is_reserved = false;
             $book->save();
             $reservation->delete();
             return response()->json(null, 204);
-        } catch (ModelNotFoundException $e) {
-            return response()->json([
-                'error' => 'Reservation or Book not found',
-                'message' => $e->getMessage(),
-            ], 404);
         } catch (Exception $e) {
             return response()->json([
                 'error' => 'Server error',

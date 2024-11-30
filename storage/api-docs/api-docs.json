@@ -344,7 +344,7 @@
         "/api/user/register": {
             "post": {
                 "tags": [
-                    "User "
+                    "User"
                 ],
                 "summary": "Register user",
                 "operationId": "d03ee3a44bdd6f0025efd14c5c76b5ae",
@@ -380,6 +380,9 @@
                     },
                     "422": {
                         "description": "Validation errors"
+                    },
+                    "500": {
+                        "description": "Server Error"
                     }
                 }
             }
@@ -468,8 +471,8 @@
             "description": "Operations with reservation"
         },
         {
-            "name": "User ",
-            "description": "User "
+            "name": "User",
+            "description": "Operations with user"
         }
     ],
     "security": [
