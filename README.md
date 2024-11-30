@@ -1,3 +1,7 @@
+### cd lib-rest
+
+### cp .env.example .env
+
 ### make up
 
 ### make migrate
