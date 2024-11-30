@@ -380,6 +380,14 @@
                 },
                 "type": "object"
             }
+        },
+        "securitySchemes": {
+            "token_security": {
+                "type": "apiKey",
+                "description": "Your api key",
+                "name": "Authorization",
+                "in": "header"
+            }
         }
     },
     "tags": [
@@ -390,6 +398,15 @@
         {
             "name": "Reservation",
             "description": "Operations with reservation"
+        }
+    ],
+    "security": [
+        {
+            "token_security": {
+                "type": "apiKey",
+                "name": "token",
+                "in": "header"
+            }
         }
     ]
 }
