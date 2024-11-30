@@ -1,4 +1,5 @@
 ```bash
+git clone https://github.com/Loopeq/lib-rest.git
 cd lib-rest
 cp .env.example .env
 make up
