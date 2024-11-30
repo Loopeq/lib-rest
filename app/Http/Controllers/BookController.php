@@ -6,6 +6,8 @@ use Illuminate\Http\Request;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Validation\ValidationException;
 use App\Models\Book;
+use App\Models\User; 
+use App\Models\Reservation;
 use OpenApi\Annotations as OA;
 
 
@@ -212,27 +214,43 @@ class BookController extends Controller
      *         required=true,
      *         @OA\Schema(type="integer")
      *     ),
-     *     @OA\Response (response="200", description="Book reserved"),
+     *     @OA\Response (response="201", description="Book reserved"),
      *     @OA\Response(response="400", description="Book is already reserved"),
+     *     @OA\Response(response="401", description="Token not provided"),
      *     @OA\Response(response="404", description="Book not found"), 
      *     @OA\Response(response="500", description="Server error")
      * )
      */
-    public function reserve($id)
+    public function reserve($id, Request $request)
     {  
         try {
-            $book = Book::findOrFail($id);
+
+            $token = $request->header('Authorization');
+
+            if (!$token) {
+                return response()->json(['message' => 'Token not provided'], 401);
+            }
+
+            $user = User::where('token', $token)->first();
+    
+            if (!$user) {
+                return response()->json(['message' => 'User  not found'], 404);
+            }
+
+            $book = Book::find($id);
             if ($book->is_reserved) {
                 return response()->json(['message' => 'Book is already reserve'], 400);
             }
+
+            $reservation = Reservation::create([
+                'book_id' => $book->id,
+                'user_id' => $user->id, 
+            ]);
+
             $book->is_reserved = true;
             $book->save();
-            return response()->json($book);
-        } catch (ModelNotFoundException $e) {
-            return response()->json([
-                'error' => 'Book to reserve not found',
-                'message' => $e->getMessage(),
-            ], 404);
+            return response()->json($book, 201);
+
         } catch (Exception $e) {
             return response()->json([
                 'error' => 'Server error',
@@ -254,25 +272,48 @@ class BookController extends Controller
      *     ),
      *     @OA\Response(response="200", description="Book returned"),
      *     @OA\Response(response="400", description="Book is not reserved"),
-     *     @OA\Response(response="404", description="Book not found"),
+     *     @OA\Response(response="404", description="Not found"),
      *     @OA\Response(response="500", description="Server error"),
      * )
      */
-    public function return($id)
+    public function return($id, Request $request)
     {
         try {
-            $book = Book::findOrFail($id);
-            if (!$book->is_reserved) {
-                return response()->json(['message' => 'Book is not reserve'], 400);
+
+            $token = $request->header('Authorization');
+            
+            if (!$token) {
+                return response()->json(['message' => 'Token not provided'], 401);
             }
+
+            $user = User::where('token', $token)->first();
+    
+            if (!$user) {
+                return response()->json(['message' => 'User  not found'], 404);
+            }
+
+            $book = Book::find($id);
+            if (!$book) {
+                return response()->json(['message' => 'Book not found'], 404);
+            }
+
+            if (!$book->is_reserved) {
+                return response()->json(['message' => 'Book is not reserved'], 400);
+            }
+
+            $reservation = Reservation::where('book_id', $book->id)
+                ->where('user_id', $user->id)
+                ->first();
+
+            if (!$reservation) {
+                return response()->json(['message' => 'No reservation found for this user and book'], 404);
+            }
+            
+            $reservation->delete();
             $book->is_reserved = false;
             $book->save();
+
             return response()->json($book);
-        } catch (ModelNotFoundException $e) {
-            return response()->json([
-                'error' => 'Book to return not found',
-                'message' => $e->getMessage(),
-            ], 404);
         } catch (Exception $e) {
             return response()->json([
                 'error' => 'Server error',

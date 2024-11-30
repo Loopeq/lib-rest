@@ -187,11 +187,14 @@
                     }
                 ],
                 "responses": {
-                    "200": {
+                    "201": {
                         "description": "Book reserved"
                     },
                     "400": {
                         "description": "Book is already reserved"
+                    },
+                    "401": {
+                        "description": "Token not provided"
                     },
                     "404": {
                         "description": "Book not found"
@@ -227,7 +230,7 @@
                         "description": "Book is not reserved"
                     },
                     "404": {
-                        "description": "Book not found"
+                        "description": "Not found"
                     },
                     "500": {
                         "description": "Server error"
