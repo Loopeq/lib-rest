@@ -22,16 +22,15 @@ return new class extends Migration
 
         try{
             DB::table('users')->insert([
-                'name' => 'admin', 
-                'email' => 'admin@gmail.com', 
-                'password' => Hash::make('password'),
+                'name' => env('ADMIN_NAME', 'admin'), 
+                'email' => env('ADMIN_EMAIL', 'admin@gmail.com'), 
+                'password' => Hash::make(env('ADMIN_PASSWORD', '12345')),
                 'is_admin' => true,
-                'token' => $this->generateToken(),
+                'token' => env('ADMIN_TOKEN', '0e40beb3c8cf3504'),
             ]);
         } catch (\Exception $e){
             Log::error('Error while creating admin' . $e->getMessage());
         }
-        
     }
 
     public function down(): void
