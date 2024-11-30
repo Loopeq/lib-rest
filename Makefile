@@ -1,7 +1,5 @@
 COMPOSE = docker-compose
 
-APP_NAME = laravel_app
-
 .PHONY: down up migrate
 
 down:
