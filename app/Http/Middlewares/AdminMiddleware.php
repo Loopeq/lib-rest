@@ -14,9 +14,14 @@ class AdminMiddleware
         $token = $request->header('Authorization');
         $user = User::where('token', $token)->first();
         
-        if (!$user || !$user->is_admin){
-            return response()->json(['message' => 'Unathorized'], 403);
+        if (!$user){
+            return response()->json(['message' => 'Unathorized'], 401);
         }
+
+        if (!$user->is_admin){ 
+            return response()->json(['message' => 'Not enough permissions', 403]);
+        }
+        
         return $next($request);
     }
 }
