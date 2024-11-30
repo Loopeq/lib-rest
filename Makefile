@@ -9,4 +9,4 @@ up:
 	$(COMPOSE) up --build -d
 
 migrate:
-	$(COMPOSE) run migrate
+	$(COMPOSE) run --rm migrate
