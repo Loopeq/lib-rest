@@ -37,8 +37,4 @@ return new class extends Migration
     {
         Schema::dropIfExists('users');
     }
-
-    private function generateToken(): string{
-        return substr(bin2hex(random_bytes(16)), 0, 16);
-    }
 };

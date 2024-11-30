@@ -340,6 +340,49 @@
                     }
                 }
             }
+        },
+        "/api/user/register": {
+            "post": {
+                "tags": [
+                    "User "
+                ],
+                "summary": "Register user",
+                "operationId": "d03ee3a44bdd6f0025efd14c5c76b5ae",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/User"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "201": {
+                        "description": "User create successfully",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "User create successfully"
+                                        },
+                                        "user": {
+                                            "$ref": "#/components/schemas/User"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "422": {
+                        "description": "Validation errors"
+                    }
+                }
+            }
         }
     },
     "components": {
@@ -382,6 +425,28 @@
                     }
                 },
                 "type": "object"
+            },
+            "User": {
+                "required": [
+                    "name",
+                    "email",
+                    "password"
+                ],
+                "properties": {
+                    "name": {
+                        "type": "string",
+                        "example": "Alesha"
+                    },
+                    "email": {
+                        "type": "string",
+                        "example": "alesha12@gmail.com"
+                    },
+                    "password": {
+                        "type": "string",
+                        "example": "supersecretpassword123"
+                    }
+                },
+                "type": "object"
             }
         },
         "securitySchemes": {
@@ -401,6 +466,10 @@
         {
             "name": "Reservation",
             "description": "Operations with reservation"
+        },
+        {
+            "name": "User ",
+            "description": "User "
         }
     ],
     "security": [

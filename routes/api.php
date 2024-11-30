@@ -3,11 +3,12 @@
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\ReservationController;
 use App\Http\Controllers\BookController;
+use App\Http\Controllers\UserController;
 use App\Http\Middlewares\AdminMiddleware;
 
 Route::post('/books/{id}/reserve', [BookController::class, 'reserve']);
 Route::post('/books/{id}/return', [BookController::class, 'return']);
-
+Route::post('/user/register', [UserController::class, 'register']);
 
 Route::middleware([AdminMiddleware::class])->group(function (){
     Route::get('/books', [BookController::class, 'index']);
